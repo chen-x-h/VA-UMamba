@@ -2,14 +2,14 @@
 
 
 ### 
-VA-UMamba pytorch implementation
+## VA-UMamba pytorch implementation
 
 model base on https://github.com/bowang-lab/U-Mamba
 
 for training: https://github.com/MIC-DKFZ/nnUNet
 
 #
-Prepare Data
+## Prepare Data
 See in preprocess/*  
 
 Use 3dircadb as a sample  
@@ -20,7 +20,8 @@ https://www.ircad.fr/research/data-sets/liver-segmentation-3d-ircadb-01/
 1. preprocess/pre_process.py for process  
 2. preprocess/data_prepare.py for generating a nnUNet-style dataset  
 
-#Integrate into nnU-Net
+#
+## Integrate into nnU-Net
 See in model/* and loss/*  
 
 You can get a model from model/VAUMamba.py.   
@@ -30,11 +31,13 @@ Notice: you should change the nnUNetPlans.json refer to plan/* and set os.enviro
 DDLoss in loss/deep_supervision.py  
 You can put it in nnunetv2/training/loss/deep_supervision.py  
 
-#Model Training and Inference
+#
+## Model Training and Inference
 
 Refer to nnUnet: https://github.com/MIC-DKFZ/nnUNet
 
-#Metrics
+#
+## Metrics
 
 See in metrics/val_metrics.py
 
