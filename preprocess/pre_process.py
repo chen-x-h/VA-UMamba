@@ -16,14 +16,6 @@ from skimage.measure import regionprops
 
 
 def _load(fp):
-    """读取文件
-
-    Args:
-        fp: 路径
-
-    Returns:
-        数据
-    """
     pos = fp.rfind('.')
     suffix = fp[pos + 1:]
     if suffix == 'npy':
@@ -35,14 +27,6 @@ def _load(fp):
 
 
 def save(dst, data):
-    """保存文件为pkl
-
-    Args:
-        dst: 目标文件名称，不带后缀
-        data: 要保存的np参数
-    Returns:
-
-    """
     with open(dst + '.pkl', 'wb') as f:
         pickle.dump(data, f)
 
@@ -206,7 +190,7 @@ def toRAI(image):
     return image
 
 
-def img_resample(itk, new_spacing=None):
+def img_resample(itk, new_spacing=None, label_re=False):
     if new_spacing is None:
         new_spacing = [0.8, 0.8, 1.0]
     original_spacing = itk.GetSpacing()
@@ -220,10 +204,15 @@ def img_resample(itk, new_spacing=None):
     ]
     resmaple = sitk.ResampleImageFilter()
     resmaple.SetInterpolator(sitk.sitkLinear)
+    if label_re:
+        resmaple.SetInterpolator(sitk.sitkNearestNeighbor)
     resmaple.SetDefaultPixelValue(0)
     resmaple.SetOutputSpacing(new_spacing)
-    resmaple.SetOutputOrigin(itk.GetOrigin())
-    resmaple.SetOutputDirection(itk.GetDirection())
+    # resmaple.SetOutputOrigin(reference_image.GetOrigin())
+    resmaple.SetOutputDirection([1.0, 0.0, 0.0,
+                                 0.0, 1.0, 0.0,
+                                 0.0, 0.0, 1.0])
+
     resmaple.SetSize(new_shape)
     new_itk = resmaple.Execute(itk)
     return new_itk
@@ -274,18 +263,17 @@ def dircadb_gen_2(d3_path, tmp_dircadb):
                 mask = mask_
 
             vesselmsk1_itk = sitk.ReadImage(vessel_msk1_path)
-            vesselmsk1_itk = img_resample(vesselmsk1_itk)
+            vesselmsk1_itk = img_resample(vesselmsk1_itk, label_re=True)
             vessel_mask1 = sitk.GetArrayFromImage(vesselmsk1_itk)
             vessel_mask1 = toRAI(vessel_mask1)
             if np.max(vessel_mask1) == 255:
                 vessel_mask1 = vessel_mask1 / 255
 
-            # 有可能是整个静脉系统
             # vessel_mask1 = mask * vessel_mask1
 
             vesselmsk2_itk = sitk.ReadImage(vessel_msk2_path)
             vesselmsk2_itk = img_resample(vesselmsk2_itk)
-            vessel_mask2 = sitk.GetArrayFromImage(vesselmsk2_itk)
+            vessel_mask2 = sitk.GetArrayFromImage(vesselmsk2_itk, label_re=True)
             vessel_mask2 = toRAI(vessel_mask2)
             if np.max(vessel_mask2) == 255:
                 vessel_mask2 = vessel_mask2 / 255
@@ -344,3 +332,4 @@ if __name__ == '__main__':
     dircadb_gen_2(d3_path=d3_path, tmp_dircadb=tmp_dircadb)
 
     print('finsh')
+
