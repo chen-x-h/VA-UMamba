@@ -1,4 +1,4 @@
-## Implementation of VA-UMamba
+## Implementation of VA-UMamba (Multi-Prior Guided Deep Learning Framework for Hepatic Vessel Segmentation)
 
 
 ### 
